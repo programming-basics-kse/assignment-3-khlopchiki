@@ -6,7 +6,7 @@ def parse_arguments():
     parser.add_argument('-medals', nargs=2, type=str, help='Country code and year of Olympic games')
     parser.add_argument('-total', type=int, help='Year to see country`s medals')
     parser.add_argument('-output', type=str, help='File to output results')
-    parser.add_argument('-overall', nargs=" ", type=str, help='Best year for country in Olympics')
+    parser.add_argument('-overall', nargs='+', type=str, help='Best year for country in Olympics')
     return parser.parse_args()
 
 def read_data(file_path):
@@ -80,7 +80,7 @@ def show_total_medals(args):
         print(f"{country} - Gold: {medals['Gold']}, Silver: {medals['Silver']}, Bronze: {medals['Bronze']}")
 
 def show_overall(args):
-    countries = args.overall.split(' ')
+    countries = args.overall
     data = read_data(args.file)
 
     for country in countries:
@@ -88,22 +88,20 @@ def show_overall(args):
         for row in data:
             if row['Team'] == country:
                 year = row['Year']
-                medal = row['Medal']
+                medal_type = row['Medal']
                 if year not in country_summary:
                     country_summary[year] = {'Gold': 0, 'Silver': 0, 'Bronze': 0}
-                if medal != 'N/A':
-                    country_summary[year][medal] += 1
+                if medal_type != 'NA':
+                    country_summary[year][medal_type] += 1
 
-        best_year = min(country_summary)
-        for years in country_summary:
-             if country_summary[years]['Gold'] > country_summary[best_year]['Gold']:
-                best_year = years
-             elif country_summary[years]['Gold'] == country_summary[best_year]['Gold'] and country_summary[years]['Silver'] > country_summary[best_year]['Silver']:
-                best_year = years
-             elif country_summary[years]['Gold'] == country_summary[best_year]['Gold'] and country_summary[years]['Silver'] == country_summary[best_year]['Silver'] and country_summary[years]['Bronze'] > country_summary[best_year]['Bronze']:
-                best_year = years
+        best_year = None
+        for year, counts in country_summary.items():
+            if not best_year or (counts['Gold'], counts['Silver'], counts['Bronze']) > (country_summary[best_year]['Gold'], country_summary[best_year]['Silver'], country_summary[best_year]['Bronze']):
+                best_year = year
 
-        print(f'{country} best year was {best_year}. They collect {country_summary[best_year]['Gold']} gold medals, {country_summary[best_year]['Silver']} silver medals, {country_summary[best_year]['Bronze']} bronze medals.')
+        print(f"{country}: Best year was {best_year} with {country_summary[best_year]['Gold']} Gold, {country_summary[best_year]['Silver']} Silver, {country_summary[best_year]['Bronze']} Bronze.")
+
+
 
 def main():
     args = parse_arguments()
@@ -111,7 +109,7 @@ def main():
         show_medals(args)
     elif args.total:
         show_total_medals(args)
-    elif args.overall(args):
+    elif args.overall:
         show_overall(args)
     else:
         print("Invalid command or missing arguments.")

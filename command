@@ -1,0 +1,1 @@
+python main.py "Olympic Athletes - athlete_events.tsv" -overall Argentina Armenia Australia
