@@ -7,6 +7,7 @@ def parse_arguments():
     parser.add_argument('-total', type=int, help='Year to see country`s medals')
     parser.add_argument('-output', type=str, help='File to output results')
     parser.add_argument('-overall', nargs='+', type=str, help='Best year for country in Olympics')
+    parser.add_argument('-interactive', help='start interactive mode')
     return parser.parse_args()
 
 def read_data(file_path):
@@ -101,6 +102,23 @@ def show_overall(args):
 
         print(f"{country}: Best year was {best_year} with {country_summary[best_year]['Gold']} Gold, {country_summary[best_year]['Silver']} Silver, {country_summary[best_year]['Bronze']} Bronze.")
 
+def interactive_mode(args):
+    while True:
+        country = input()
+        data = read_data(args.file)
+        country_summary = {}
+
+        for row in data:
+            if row['Team'] == country:
+                year = row['Year']
+                medal_type = row['Medal']
+                if year not in country_summary:
+                    country_summary[year] = {'Gold': 0, 'Silver': 0, 'Bronze': 0}
+                if medal_type != 'NA':
+                    country_summary[year][medal_type] += 1
+
+        first_time = min in country_summary
+        print(f'{country} first time in Olympics was in {first_time} year')
 
 
 def main():
@@ -111,6 +129,8 @@ def main():
         show_total_medals(args)
     elif args.overall:
         show_overall(args)
+    elif args.interactive:
+        interactive_mode(args)
     else:
         print("Invalid command or missing arguments.")
 if __name__ == '__main__':
