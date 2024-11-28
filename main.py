@@ -113,13 +113,50 @@ def interactive_mode(args):
                 year = row['Year']
                 medal_type = row['Medal']
                 if year not in country_summary:
-                    country_summary[year] = {'Gold': 0, 'Silver': 0, 'Bronze': 0}
+                    country_summary[year] = {'Gold': 0, 'Silver': 0, 'Bronze': 0, 'City': row['City']}
                 if medal_type != 'NA':
                     country_summary[year][medal_type] += 1
 
-        first_time = min in country_summary
-        print(f'{country} first time in Olympics was in {first_time} year')
+        first_time = 100000
+        for year in country_summary:
+            if  int(first_time) > int(year):
+                first_time = year
+        print(f'{country} first time in Olympics was in {first_time} year in {country_summary[first_time]['City']}')
 
+        best_year = None
+        for year, counts in country_summary.items():
+            if not best_year or (counts['Gold'], counts['Silver'], counts['Bronze']) > (
+            country_summary[best_year]['Gold'], country_summary[best_year]['Silver'],
+            country_summary[best_year]['Bronze']):
+                best_year = year
+        print(f'Beast year was {best_year}. They scored {country_summary[best_year]['Gold']} gold medals, {country_summary[best_year]['Silver']} silver medals, {country_summary[best_year]['Bronze']} bronze medals.')
+
+        worst_year = None
+        for year, counts in country_summary.items():
+            if not worst_year or (counts['Gold'], counts['Silver'], counts['Bronze']) < (
+                    country_summary[worst_year]['Gold'], country_summary[worst_year]['Silver'],
+                    country_summary[worst_year]['Bronze']):
+                worst_year = year
+        print(f'Worst year was {worst_year}. They scored {country_summary[worst_year]['Gold']} gold medals, {country_summary[worst_year]['Silver']} silver medals, {country_summary[worst_year]['Bronze']} bronze medals.')
+
+        total_gold = []
+        total_silver = []
+        total_bronze = []
+        for year, counts in country_summary.items():
+            gold = counts['Gold']
+            total_gold.append(gold)
+
+            silver = counts['Silver']
+            total_silver.append(silver)
+
+            bronze = counts['Bronze']
+            total_bronze.append(bronze)
+
+        average_gold = sum(total_gold)/len(total_gold)
+        average_silver = sum(total_silver)/len(total_silver)
+        average_bronze = sum(total_bronze)/len(total_bronze)
+        print(f'Average number of medals: {average_gold} Gold, {average_silver} Silver, {average_bronze} Bronze')
+        break
 
 def main():
     args = parse_arguments()
