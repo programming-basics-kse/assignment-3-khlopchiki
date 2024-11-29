@@ -87,6 +87,8 @@ def show_overall(args):
     for country in countries:
         country_summary = {}
         for row in data:
+            if row['NOC'] == country:
+               country = row['Team']
             if row['Team'] == country:
                 year = row['Year']
                 medal_type = row['Medal']
@@ -109,6 +111,8 @@ def interactive_mode(args):
         country_summary = {}
 
         for row in data:
+            if row['NOC'] == country:
+               country = row['Team']
             if row['Team'] == country:
                 year = row['Year']
                 medal_type = row['Medal']
